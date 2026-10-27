@@ -8,7 +8,7 @@ Bem-vindo à central de conhecimento do Laboratório de Shell. Este espaço orga
 
 Este é um guia sugerido para aprender Shell Script de forma progressiva.
 
-### 🔰 [Nível Iniciante: Os Fundamentos](./Beginner/index.md)
+### 🔰 Nível Iniciante: Os Fundamentos
 
 O objetivo aqui é se sentir confortável no terminal e entender como os comandos básicos se conectam.
 
@@ -32,7 +32,7 @@ O objetivo aqui é se sentir confortável no terminal e entender como os comando
 
 ---
 
-### 🛠️ [Nível Intermediário: Construindo Lógica](./Intermediate/index.md)
+### 🛠️ Nível Intermediário: Construindo Lógica
 
 Neste nível, você começa a criar scripts que tomam decisões e executam tarefas repetitivas.
 
@@ -51,7 +51,7 @@ Neste nível, você começa a criar scripts que tomam decisões e executam taref
 
 ---
 
-### 🚀 [Nível Avançado: Automação e Maestria](./Advanced/index.md)
+### 🚀 Nível Avançado: Automação e Maestria
 
 Aqui você domina o Shell para criar ferramentas poderosas e automatizar tarefas complexas.
 
