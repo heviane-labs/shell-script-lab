@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Git pre-commit hook to ensure scripts/index.md is updated before committing
+
+set -euo pipefail
+
+if [ -f "scripts/update-index.sh" ]; then
+    echo "🔄 [pre-commit] Synchronizing scripts/index.md..."
+    bash scripts/update-index.sh
+    git add scripts/index.md
+fi

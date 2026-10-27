@@ -20,11 +20,16 @@ jobs:
           find scripts -type f -name "*.sh" -print0 | xargs -0 -r shellcheck
 
   test:
-    name: Automated Tests (BATS)
+    name: Automated Tests (BATS) & Index Sync
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Verify Index Catalog is Synchronized
+        run: |
+          echo "📑 Checking scripts/index.md synchronization..."
+          bash scripts/update-index.sh --check
 
       - name: Install BATS
         run: |

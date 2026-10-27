@@ -2,6 +2,7 @@
 # ==============================================================================
 # Script: system-info.sh
 # Description: Gathers and displays basic system environment, user, and disk metrics.
+# Category: System
 # Author: Heviane
 # ==============================================================================
 

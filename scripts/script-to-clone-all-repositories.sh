@@ -4,6 +4,7 @@
 # Script: script-to-clone-all-repositories.sh
 # Descrição: Clona ou atualiza repositórios do GitHub organizando-os em pastas
 #            específicas para cada conta/organização.
+# Category: Automation
 # Autor: Heviane
 #
 # Lembre-se de rodar dentro do terminal Git Bash no Windows.

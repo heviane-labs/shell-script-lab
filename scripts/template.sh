@@ -3,6 +3,7 @@
 # Script: template.sh
 # Description: Canonical production-grade baseline template with robust error
 #              handling, colorized logging, help flags, and signal traps.
+# Category: Template
 # Author: Heviane
 # ==============================================================================
 

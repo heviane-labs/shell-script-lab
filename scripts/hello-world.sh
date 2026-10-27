@@ -3,6 +3,7 @@
 # Script: hello-world.sh
 # Description: Introductory script demonstrating variables, shebang, interpolation,
 #              and standard exit codes.
+# Category: Basics
 # Author: Heviane
 # ==============================================================================
 

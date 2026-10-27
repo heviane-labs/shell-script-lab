@@ -120,6 +120,12 @@ Before completing any task, an AI agent must verify:
    ```bash
    bats tests/
    ```
+4. **Catalog Index Synchronization:**
+   * Whenever a script is created, modified, or removed, the scripts index catalog must be synchronized:
+   ```bash
+   ./scripts/update-index.sh
+   ```
+   Verify with `bash scripts/update-index.sh --check`.
 
 ---
 
