@@ -1,4 +1,4 @@
-name: Lint Shell Scripts
+name: Quality & Testing
 
 on:
   push:
@@ -8,13 +8,30 @@ on:
 
 jobs:
   shellcheck:
-    name: ShellCheck Lint
+    name: ShellCheck Linter
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout do Repositório
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Executar ShellCheck
+      - name: Run ShellCheck
         run: |
-          echo "🔍 Analisando scripts .sh com ShellCheck..."
+          echo "🔍 Running ShellCheck on all .sh scripts..."
           find scripts -type f -name "*.sh" -print0 | xargs -0 -r shellcheck
+
+  test:
+    name: Automated Tests (BATS)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install BATS
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bats
+
+      - name: Run BATS Unit Tests
+        run: |
+          echo "🧪 Running BATS test suite..."
+          bats tests/

@@ -1,38 +1,38 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # Script: system-info.sh
-# Descrição: Coleta e exibe informações básicas do ambiente e do sistema.
-# Autor: Heviane
+# Description: Gathers and displays basic system environment, user, and disk metrics.
+# Author: Heviane
 # ==============================================================================
 
 set -euo pipefail
 
 echo "=================================================="
-echo "          💻 Informações do Sistema"
+echo "          💻 System Information Report"
 echo "=================================================="
 
-# Sistema Operacional e Kernel
-echo -e "\n📌 Sistema Operacional:"
-uname -a 2>/dev/null || echo "Informação não disponível via uname"
+# Operating System & Kernel
+echo -e "\n📌 OS & Kernel:"
+uname -a 2>/dev/null || echo "Uname not available on this platform"
 
-# Shell em Execução
-echo -e "\n🐚 Shell Atual:"
-echo "Caminho: ${SHELL:-Não definido}"
+# Active Shell
+echo -e "\n🐚 Active Shell:"
+echo "Path: ${SHELL:-Not defined}"
 if [ -n "${BASH_VERSION:-}" ]; then
-    echo "Versão do Bash: $BASH_VERSION"
+    echo "Bash Version: $BASH_VERSION"
 fi
 
-# Usuário e Diretório Inicial
-echo -e "\n👤 Usuário:"
-echo "Nome: ${USER:-$(whoami)}"
-echo "Home: ${HOME:-$USERPROFILE}"
+# User & Home Directory
+echo -e "\n👤 Current User:"
+echo "Username: ${USER:-$(whoami 2>/dev/null || echo 'unknown')}"
+echo "Home:     ${HOME:-${USERPROFILE:-Not defined}}"
 
-# Uso de Disco (se df estiver disponível)
+# Disk Space Usage
 if command -v df >/dev/null 2>&1; then
-    echo -e "\n💾 Uso de Disco:"
+    echo -e "\n💾 Disk Usage:"
     df -h . 2>/dev/null || true
 fi
 
 echo -e "\n=================================================="
-echo "Relatório concluído com sucesso."
+echo "Report generated successfully."
 exit 0

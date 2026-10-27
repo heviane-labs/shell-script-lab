@@ -1,0 +1,26 @@
+{
+  "name": "Shell Script Lab Environment",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "files.eol": "\n",
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.formatOnSave": true,
+        "files.trimTrailingWhitespace": true,
+        "shellcheck.enable": true,
+        "shellcheck.run": "onType"
+      },
+      "extensions": [
+        "timonwong.shellcheck",
+        "foxundermoon.shell-format",
+        "mads-hartmann.bash-ide-support",
+        "eamodio.gitlens"
+      ]
+    }
+  },
+  "remoteUser": "vscode"
+}
