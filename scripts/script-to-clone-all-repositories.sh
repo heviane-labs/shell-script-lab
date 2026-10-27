@@ -19,31 +19,32 @@ echo ""
 # 1. Seleção da Conta (Organização ou Usuário)
 # ------------------------------------------------------------------------------
 echo "📌 Selecione a conta do GitHub"
-echo "  1) heviane          (Profissional e Portifólio)"
+echo "  1) heviane          (Profissional e Portfólio)"
 echo "  2) heviane-labs     (Experimentos, protótipos e projetos em desenvolvimento)"
 echo "  3) heviane-learning (Estudos, bootcamps, cursos e treinamentos)"
 echo "  4) Informar outra conta manualmente"
-read -p "Escolha [1-3] (Padrão: 1): " OPT_TARGET
+read -r -p "Escolha [1-4] (Padrão: 1): " OPT_TARGET
 
 case "$OPT_TARGET" in
     1)
         TARGET="heviane"
         ;;
-	2)
-	    TARGET="heviane-labs"
+    2)
+        TARGET="heviane-labs"
         ;;
-	3)
-	    TARGET="heviane-learning"
+    3)
+        TARGET="heviane-learning"
         ;;
     4)
-        read -p "Digite o nome de usuário ou organização: " TARGET
+        read -r -p "Digite o nome de usuário ou organização: " TARGET
         if [ -z "$TARGET" ]; then
             echo "❌ Nome não pode ser vazio. Operação cancelada."
             exit 1
         fi
         ;;
     *)
-;
+        TARGET="heviane"
+        ;;
 esac
 
 echo ""
@@ -54,7 +55,7 @@ echo ""
 echo "🔒 Selecione o protocolo de conexão:"
 echo "  1) HTTPS  (Recomendado / Não exige chave SSH)"
 echo "  2) SSH    (git@github.com:... / Requer chave configurada)"
-read -p "Escolha [1-2] (Padrão: 1): " OPT_PROTO
+read -r -p "Escolha [1-2] (Padrão: 1): " OPT_PROTO
 
 case "$OPT_PROTO" in
     2)
