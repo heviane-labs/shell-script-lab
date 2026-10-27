@@ -126,3 +126,4 @@ Before completing any task, an AI agent must verify:
 ## 💡 5. Canonical Script Template
 
 When generating a new script, use [`scripts/template.sh`](file:///e:/Projects/GitHub_Old2/heviane-labs/shell-script-lab/scripts/template.sh) as the baseline structure.
+

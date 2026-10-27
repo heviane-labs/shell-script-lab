@@ -27,3 +27,4 @@ setup() {
   [ "$status" -eq 1 ]
   [[ "$output" =~ "Unknown option" ]]
 }
+

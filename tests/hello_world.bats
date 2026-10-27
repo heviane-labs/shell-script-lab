@@ -14,3 +14,4 @@ setup() {
   [ "$status" -eq 0 ]
   [[ "$output" =~ "Welcome to the Shell Script Laboratory!" ]]
 }
+
