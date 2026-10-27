@@ -11,8 +11,10 @@ set -euo pipefail
 
 # 1. Variables
 readonly MESSAGE="Welcome to the Shell Script Laboratory!"
-readonly CURRENT_USER="$(whoami 2>/dev/null || echo "${USER:-unknown}")"
-readonly RUN_DATE="$(date '+%Y-%m-%d %H:%M:%S')"
+CURRENT_USER="$(whoami 2>/dev/null || echo "${USER:-unknown}")"
+readonly CURRENT_USER
+RUN_DATE="$(date '+%Y-%m-%d %H:%M:%S')"
+readonly RUN_DATE
 
 # 2. Terminal Output
 echo "=================================================="

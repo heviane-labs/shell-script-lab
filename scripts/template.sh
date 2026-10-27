@@ -16,8 +16,11 @@ set -euo pipefail
 # ------------------------------------------------------------------------------
 # Global Configurations & Constants
 # ------------------------------------------------------------------------------
-readonly SCRIPT_NAME="$(basename "${BASH_SOURCE[0]}")"
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_NAME="$(basename "${BASH_SOURCE[0]}")"
+readonly SCRIPT_NAME
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
 
 # ------------------------------------------------------------------------------
 # Logging Utilities

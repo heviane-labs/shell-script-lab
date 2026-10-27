@@ -12,10 +12,11 @@ set -euo pipefail
 # ------------------------------------------------------------------------------
 # Global Configurations
 # ------------------------------------------------------------------------------
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
 readonly INDEX_FILE="$SCRIPT_DIR/index.md"
-readonly TEMP_FILE="$(mktemp "${TMPDIR:-/tmp}/index_md.XXXXXX")"
+TEMP_FILE="$(mktemp "${TMPDIR:-/tmp}/index_md.XXXXXX")"
+readonly TEMP_FILE
 
 # ------------------------------------------------------------------------------
 # Cleanup Hook
