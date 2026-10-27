@@ -13,7 +13,7 @@ Este é um guia sugerido para aprender Shell Script de forma progressiva.
 O objetivo aqui é se sentir confortável no terminal e entender como os comandos básicos se conectam.
 
 - [ ] **Conceitos Básicos:**
-  - [ ] O que é Shell?
+  - [ ] [O que é Shell?](./o-que-e-shell.md)
 
 - [ ] **Comandos Essenciais de Navegação e Manipulação:**
   - [ ] Navegação: `ls`, `cd`, `pwd`.
