@@ -25,7 +25,7 @@ Analogia Simples:
 
 Imagine que o Shell é o seu navegador de internet (como Chrome ou Firefox).
 Os programas de linha de comando são os sites que você acessa (como Google, Wikipedia, etc.).
-Você usa o navegador (o Shell) para rodar e interagir com os sites (os programas de linha de comando). git, por exemplo, é um programa de linha de comando poderoso, mas ele não é um Shell. Você o executa dentro de um Shell.
+Você usa o navegador (o Shell) para rodar e interagir com os sites (os programas de linha de comando). `git`, por exemplo, é um programa de linha de comando poderoso, mas ele não é um Shell. Você o executa dentro de um Shell.
 
 **Em resumo**: Todo Shell é um programa de linha de comando, mas nem todo programa de linha de comando é um Shell. O Shell é o programa específico que serve como seu intérprete de comandos.
 
@@ -33,21 +33,15 @@ Você usa o navegador (o Shell) para rodar e interagir com os sites (os programa
 
 Agora, existem diferentes tipos de intérpretes, cada um com seu estilo e habilidades:
 
-- **Bash (Bourne Again Shell)**: É o intérprete clássico e mais comum no mundo Linux e era o padrão no macOS por muitos anos. É como um intérprete universal, confiável e que está em todo lugar. Quase todo script que você encontra para Linux/macOS funciona bem com ele.
+- **Bash (Bourne Again Shell)**: É o intérprete clássico, poderoso e mais comum no mundo Linux, tendo sido também o padrão no macOS por muitos anos. Quase todo script e documentação para Linux/macOS funciona nativamente com ele, tornando-o o padrão de fato para scripts portáveis.
 
-Por muitos anos, foi o shell padrão em praticamente todas as distribuições Linux e também no macOS. É conhecido por ser poderoso, onipresente e ter uma vasta quantidade de documentação e scripts disponíveis.
+- **Zsh (Z Shell)**: É um *superset* do Bash, moderno e com recursos aprimorados. Inclui autocompletar inteligente, correção de digitação, temas visuais e um vasto ecossistema de plugins (famoso pelo framework "Oh My Zsh"). É o shell padrão nas versões recentes do macOS e muito popular entre desenvolvedores.
 
-- **Zsh (Z Shell)**: É um intérprete moderno e poderoso, com muitos "superpoderes". Ele faz tudo o que o Bash faz, mas adiciona recursos incríveis como autocompletar comandos de forma mais inteligente, temas visuais e um sistema de plugins (famoso pelo framework "Oh My Zsh") que o torna muito mais produtivo e agradável de usar. É o padrão nos macOS mais recentes.
+- **PowerShell**: Intérprete moderno e poderoso da Microsoft. Ao contrário de Bash e Zsh que operam com fluxos de texto, o PowerShell trabalha diretamente com **objetos**. Embora nativo do Windows, é multiplataforma (roda também em Linux e macOS) e excelente para automação e administração de sistemas.
 
-É o shell padrão nas versões mais recentes do macOS. Ele é um "supersconjunto" do bash, ou seja, faz tudo o que o bash faz, mas adiciona muitos recursos modernos, como autocompletar aprimorado, correção de digitação, temas e um ecossistema de plugins robusto (popularizado pelo framework "Oh My Zsh"). É extremamente popular entre os desenvolvedores em ambos os sistemas.
+- **Command Prompt (CMD ou `cmd.exe`)**: O shell legado do Windows. É mais simples e mantido primariamente para compatibilidade com scripts antigos (`.bat`). Para novas tarefas no Windows, o PowerShell é quase sempre a melhor escolha.
 
-- **PowerShell**: Nativo do Windows. É o intérprete da Microsoft, construído para o mundo Windows, mas que hoje também funciona em Linux e macOS. A grande diferença é que, enquanto Bash e Zsh trabalham principalmente com texto, o PowerShell trabalha com objetos. Isso o torna extremamente poderoso para automação e gerenciamento de sistemas, especialmente no ecossistema Windows.
-
-É o shell moderno e mais poderoso do Windows. Ele foi projetado para automação, gerenciamento de sistemas e é muito mais robusto que seu antecessor. Sua principal característica é trabalhar com objetos em vez de apenas texto, o que o torna ideal para scripts complexos. É a recomendação padrão para a maioria das tarefas hoje em dia.
-
-- **Command Prompt (CMD ou `cmd.exe`)**: Nativo do Windows. É o shell legado do Windows. É mais simples e existe principalmente para garantir a compatibilidade com programas e scripts antigos (arquivos `.bat`). Para novas tarefas, o PowerShell é quase sempre a melhor escolha.
-
-- **fish (Friendly Interactive Shell)**: Este shell foca em ser amigável e funcional logo após a instalação, sem a necessidade de muita configuração. Ele oferece recursos como sugestões de comandos baseadas no histórico e realce de sintaxe (syntax highlighting) por padrão, o que o torna uma ótima opção para iniciantes.
+- **fish (Friendly Interactive Shell)**: Focado em ser amigável e funcional logo após a instalação, sem necessidade de configurações complexas. Traz sugestões de comandos baseadas no histórico e realce de sintaxe (*syntax highlighting*) ativados por padrão.
 
 ## Resumo da Diferença
 
@@ -56,8 +50,8 @@ Por muitos anos, foi o shell padrão em praticamente todas as distribuições Li
 | Shell | Categoria/Conceito | O programa que interpreta seus comandos | Todos os sistemas |
 | Bash | Implementação de Shell | O padrão "clássico", universal e confiável | Maioria das distribuições Linux |
 | Zsh | Implementação de Shell | Moderno, customizável e com autocompletar avançado | macOS recentes |
-| PowerShell | Implementação de Shell | Orientado a objetos, focado em automação. | Windows |
+| PowerShell | Implementação de Shell | Orientado a objetos, focado em automação | Windows |
 
 > **Em suma**:
-    > - Shell é o tipo de programa.
-    > - Bash, Zsh e PowerShell são implementações específicas desse tipo de programa.
+> - Shell é o tipo de programa.
+> - Bash, Zsh e PowerShell são implementações específicas desse tipo de programa.
