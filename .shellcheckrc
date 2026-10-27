@@ -1,0 +1,8 @@
+# Configuração padrão do ShellCheck
+# https://github.com/koalaman/shellcheck/wiki
+
+# Shell padrão quando não especificado
+shell=bash
+
+# Desativar avisos específicos se necessário (exemplo: SC1091 para sources externos)
+# disable=SC1091

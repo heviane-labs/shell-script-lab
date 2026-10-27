@@ -1,0 +1,20 @@
+name: Lint Shell Scripts
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  shellcheck:
+    name: ShellCheck Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: Executar ShellCheck
+        run: |
+          echo "🔍 Analisando scripts .sh com ShellCheck..."
+          find scripts -type f -name "*.sh" -print0 | xargs -0 -r shellcheck
