@@ -34,8 +34,16 @@ chmod +x scripts/hello-world.sh
 
 ## 🔄 Atualizando este Índice
 
-Para atualizar este arquivo automaticamente após criar ou editar scripts:
+Para atualizar este arquivo manualmente após criar ou editar scripts:
 
 ```bash
 ./scripts/update-index.sh
+```
+
+### 🪝 Automação com Git Hook (Recomendado)
+
+Para que o Git sincronize este índice automaticamente sempre que você fizer um `git commit` manual, ative os hooks locais uma única vez:
+
+```bash
+git config core.hooksPath .githooks
 ```

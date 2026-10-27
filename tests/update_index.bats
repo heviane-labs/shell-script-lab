@@ -15,3 +15,4 @@ setup() {
   [ "$status" -eq 0 ]
   [[ "$output" =~ "scripts/index.md is fully up-to-date." ]]
 }
+

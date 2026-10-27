@@ -8,3 +8,4 @@ if [ -f "scripts/update-index.sh" ]; then
     bash scripts/update-index.sh
     git add scripts/index.md
 fi
+
