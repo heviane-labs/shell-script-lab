@@ -248,6 +248,9 @@ main() {
         OUTPUT_DIR="${base_parent}/${TARGET}"
     fi
 
+    # Normalize Windows backslashes to POSIX forward slashes
+    OUTPUT_DIR="${OUTPUT_DIR//\\//}"
+
     local url_field
     if [[ "$PROTOCOL" == "ssh" ]]; then
         url_field="ssh_url"
