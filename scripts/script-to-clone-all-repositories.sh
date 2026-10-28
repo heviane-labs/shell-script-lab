@@ -1,155 +1,342 @@
-#!/bin/bash
-
+#!/usr/bin/env bash
 # ==============================================================================
 # Script: script-to-clone-all-repositories.sh
-# Descrição: Clona ou atualiza repositórios do GitHub organizando-os em pastas
-#            específicas para cada conta/organização.
+# Description: Clones or synchronizes all GitHub repositories for a given account or organization.
 # Category: Automation
-# Autor: Heviane
-#
-# Lembre-se de rodar dentro do terminal Git Bash no Windows.
+# Author: Heviane
 # ==============================================================================
 
-clear
-echo "======================================================"
-echo "         🐙 GitHub Repository Cloner"
-echo "======================================================"
-echo ""
+set -euo pipefail
 
 # ------------------------------------------------------------------------------
-# 1. Seleção da Conta (Organização ou Usuário)
+# Global Configurations & Constants
 # ------------------------------------------------------------------------------
-echo "📌 Selecione a conta do GitHub"
-echo "  1) heviane          (Profissional e Portfólio)"
-echo "  2) heviane-labs     (Experimentos, protótipos e projetos em desenvolvimento)"
-echo "  3) heviane-learning (Estudos, bootcamps, cursos e treinamentos)"
-echo "  4) Informar outra conta manualmente"
-read -r -p "Escolha [1-4] (Padrão: 1): " OPT_TARGET
+SCRIPT_NAME="$(basename "${BASH_SOURCE[0]}")"
+readonly SCRIPT_NAME
 
-case "$OPT_TARGET" in
-    1)
-        TARGET="heviane"
-        ;;
-    2)
-        TARGET="heviane-labs"
-        ;;
-    3)
-        TARGET="heviane-learning"
-        ;;
-    4)
-        read -r -p "Digite o nome de usuário ou organização: " TARGET
-        if [ -z "$TARGET" ]; then
-            echo "❌ Nome não pode ser vazio. Operação cancelada."
-            exit 1
-        fi
-        ;;
-    *)
-        TARGET="heviane"
-        ;;
-esac
-
-echo ""
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
 
 # ------------------------------------------------------------------------------
-# 2. Seleção do Protocolo (HTTPS ou SSH)
+# Logging Utilities
 # ------------------------------------------------------------------------------
-echo "🔒 Selecione o protocolo de conexão:"
-echo "  1) HTTPS  (Recomendado / Não exige chave SSH)"
-echo "  2) SSH    (git@github.com:... / Requer chave configurada)"
-read -r -p "Escolha [1-2] (Padrão: 1): " OPT_PROTO
+log_info() {
+    echo -e "\033[1;34m[INFO]\033[0m $*"
+}
 
-case "$OPT_PROTO" in
-    2)
-        PROTOCOLO="ssh"
-        URL_TYPE="ssh_url"
-        ;;
-    *)
-        PROTOCOLO="https"
-        URL_TYPE="clone_url"
-        ;;
-esac
+log_success() {
+    echo -e "\033[1;32m[SUCCESS]\033[0m $*"
+}
 
-# ------------------------------------------------------------------------------
-# 3. Definição do Diretório de Destino
-# ------------------------------------------------------------------------------
-# Obtém a pasta onde o próprio script está armazenado (ex: E:/Projects/Github)
-BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEST_DIR="${BASE_DIR}/${TARGET}"
+log_warn() {
+    echo -e "\033[1;33m[WARN]\033[0m $*" >&2
+}
 
-echo ""
-echo "======================================================"
-echo "⚙️  Configuração selecionada:"
-echo "   Conta:     $TARGET"
-echo "   Protocolo: $(echo "$PROTOCOLO" | tr '[:lower:]' '[:upper:]')"
-echo "   Destino:   $DEST_DIR"
-echo "======================================================"
-echo ""
-
-# Cria a pasta de destino caso ela ainda não exista
-if [ ! -d "$DEST_DIR" ]; then
-    echo "📁 Criando diretório: '$DEST_DIR'..."
-    mkdir -p "$DEST_DIR"
-fi
+log_error() {
+    echo -e "\033[1;31m[ERROR]\033[0m $*" >&2
+}
 
 # ------------------------------------------------------------------------------
-# 4. Verificação do Perfil na API do GitHub (Usuário vs Organização)
+# Cleanup Hook
 # ------------------------------------------------------------------------------
-echo "🔍 Verificando o perfil de '$TARGET' no GitHub..."
-account_info=$(curl -s "https://api.github.com/users/${TARGET}")
-
-if echo "$account_info" | grep -q '"message": *"Not Found"'; then
-    echo "❌ Erro: Conta '$TARGET' não foi encontrada no GitHub."
-    exit 1
-fi
-
-if echo "$account_info" | grep -q '"type": *"Organization"'; then
-    API_ENDPOINT="orgs"
-    echo "🏢 Conta identificada como: Organização"
-else
-    API_ENDPOINT="users"
-    echo "👤 Conta identificada como: Usuário"
-fi
+cleanup() {
+    local exit_code=$?
+    if [ "$exit_code" -ne 0 ]; then
+        log_error "Execution terminated with exit code $exit_code."
+    fi
+    exit "$exit_code"
+}
+trap cleanup EXIT SIGINT SIGTERM
 
 # ------------------------------------------------------------------------------
-# 5. Busca e Clonagem/Atualização dos Repositórios
+# Help / Usage Display
 # ------------------------------------------------------------------------------
-PER_PAGE=100
-PAGE=1
+show_help() {
+    cat << EOF
+Usage: $SCRIPT_NAME [options]
 
-echo "📦 Buscando repositórios públicos..."
+Clones or updates all public/private GitHub repositories for a target user or organization.
 
-while : ; do
-    response=$(curl -s "https://api.github.com/${API_ENDPOINT}/${TARGET}/repos?page=${PAGE}&per_page=${PER_PAGE}")
+Options:
+  -h, --help               Show this help message and exit
+  -t, --target ACCOUNT     Specify GitHub username or organization
+  -p, --protocol PROTO     Protocol to use: 'https' (default) or 'ssh'
+  -o, --output-dir DIR     Destination directory for cloned repositories
+  -d, --dry-run            Simulate operations without cloning or pulling
 
-    # Verifica se atingiu limite de requisições ou outro erro da API
-    if echo "$response" | grep -q '"message":'; then
-        echo "⚠️ Mensagem da API do GitHub:"
-        echo "$response" | sed -n 's/.*"message": *"\([^"]*\)".*/  -> \1/p'
-        break
+Examples:
+  ./$SCRIPT_NAME --target heviane-labs --protocol https
+  ./$SCRIPT_NAME --target heviane --dry-run
+  ./$SCRIPT_NAME           # Launches interactive wizard
+EOF
+}
+
+# ------------------------------------------------------------------------------
+# Helper Functions
+# ------------------------------------------------------------------------------
+get_auth_headers() {
+    local token=""
+
+    if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+        token="$GITHUB_TOKEN"
+    elif command -v gh >/dev/null 2>&1; then
+        token="$(gh auth token 2>/dev/null || true)"
     fi
 
-    # Filtra as URLs de acordo com o protocolo escolhido
-    repositories=$(echo "$response" | awk -v campo="$URL_TYPE" '$0 ~ campo {print $2}' | sed -e 's/^"//g' -e 's/",$//g')
+    if [[ -n "$token" ]]; then
+        echo "-H Authorization: Bearer $token"
+    fi
+}
 
-    # Se a página atual não retornar repositórios, encerra o loop
-    [ -z "$repositories" ] && break
+extract_repo_urls() {
+    local json="$1"
+    local field="$2"
 
-    for repo in $repositories; do
-        repo_name=$(basename "$repo" .git)
-        repo_path="${DEST_DIR}/${repo_name}"
+    if command -v jq >/dev/null 2>&1; then
+        echo "$json" | jq -r ".[].${field} // empty"
+    else
+        # Fallback regex extraction when jq is not installed.
+        # '|| true' ensures pipefail doesn't trigger when zero matches are found on empty pages.
+        echo "$json" | grep -E "\"${field}\"\s*:" | sed -E "s/.*\"${field}\"\s*:\s*\"([^\"]+)\".*/\1/" || true
+    fi
+}
 
-        if [ -d "$repo_path" ]; then
-            echo "🔄 Repositório '$repo_name' já existe. Atualizando com git pull..."
-            git -C "$repo_path" pull
-        else
-            echo "📥 Clonando '$repo_name' em '$DEST_DIR'..."
-            git clone "$repo" "$repo_path"
-        fi
+detect_account_type() {
+    local target="$1"
+    local auth_header
+    auth_header="$(get_auth_headers)"
+    local account_info
+
+    if [[ -n "$auth_header" ]]; then
+        # Word splitting intentional for curl header arguments
+        # shellcheck disable=SC2086
+        account_info="$(curl -s $auth_header "https://api.github.com/users/${target}")"
+    else
+        account_info="$(curl -s "https://api.github.com/users/${target}")"
+    fi
+
+    if echo "$account_info" | grep -q '"message": *"Not Found"'; then
+        log_error "GitHub account or organization '$target' not found."
+        return 1
+    fi
+
+    if echo "$account_info" | grep -q '"type": *"Organization"'; then
+        echo "orgs"
+    else
+        echo "users"
+    fi
+}
+
+# ------------------------------------------------------------------------------
+# Interactive Wizard
+# ------------------------------------------------------------------------------
+interactive_wizard() {
+    echo "======================================================"
+    echo "         🐙 GitHub Repository Cloner"
+    echo "======================================================"
+    echo ""
+
+    # 1. Target Account Selection
+    echo "📌 Select GitHub Account:"
+    echo "  1) heviane          (Professional & Portfolio)"
+    echo "  2) heviane-labs     (Experiments, prototypes & lab)"
+    echo "  3) heviane-learning (Studies & training)"
+    echo "  4) Enter custom username or organization"
+    read -r -p "Choose [1-4] (Default: 1): " opt_target
+
+    case "$opt_target" in
+        2) TARGET="heviane-labs" ;;
+        3) TARGET="heviane-learning" ;;
+        4)
+            read -r -p "Enter GitHub username or organization: " TARGET
+            if [[ -z "$TARGET" ]]; then
+                log_error "Account name cannot be empty."
+                exit 1
+            fi
+            ;;
+        *) TARGET="heviane" ;;
+    esac
+
+    # 2. Protocol Selection
+    echo ""
+    echo "🔒 Select Connection Protocol:"
+    echo "  1) HTTPS  (Recommended, no SSH key required)"
+    echo "  2) SSH    (git@github.com:... / Requires configured SSH key)"
+    read -r -p "Choose [1-2] (Default: 1): " opt_proto
+
+    case "$opt_proto" in
+        2) PROTOCOL="ssh" ;;
+        *) PROTOCOL="https" ;;
+    esac
+
+    # 3. Output Directory
+    local default_base_dir
+    default_base_dir="$(cd "$SCRIPT_DIR/../.." && pwd)"
+    local default_dest="${default_base_dir}/${TARGET}"
+
+    echo ""
+    echo "📁 Destination Directory:"
+    read -r -p "Path [Default: $default_dest]: " custom_dest
+    OUTPUT_DIR="${custom_dest:-$default_dest}"
+}
+
+# ------------------------------------------------------------------------------
+# Main Application Logic
+# ------------------------------------------------------------------------------
+main() {
+    local TARGET=""
+    local PROTOCOL="https"
+    local OUTPUT_DIR=""
+    local DRY_RUN=false
+    local IS_INTERACTIVE=true
+
+    # Parse CLI Arguments
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -h|--help)
+                show_help
+                exit 0
+                ;;
+            -t|--target)
+                TARGET="${2:-}"
+                IS_INTERACTIVE=false
+                shift 2
+                ;;
+            -p|--protocol)
+                PROTOCOL="${2:-https}"
+                IS_INTERACTIVE=false
+                shift 2
+                ;;
+            -o|--output-dir)
+                OUTPUT_DIR="${2:-}"
+                IS_INTERACTIVE=false
+                shift 2
+                ;;
+            -d|--dry-run)
+                DRY_RUN=true
+                shift
+                ;;
+            *)
+                log_error "Unknown option: $1"
+                show_help
+                exit 1
+                ;;
+        esac
     done
 
-    PAGE=$((PAGE + 1))
-done
+    # Run wizard if not specified via CLI
+    if [ "$IS_INTERACTIVE" = true ] && [[ -z "$TARGET" ]]; then
+        interactive_wizard
+    fi
 
-echo ""
-echo "✅ Todos os repositórios foram processados com sucesso em:"
-echo "   📂 $DEST_DIR"
+    if [[ -z "$TARGET" ]]; then
+        log_error "Target account is required. Use --target or run interactively."
+        exit 1
+    fi
+
+    # Set default destination if not provided
+    if [[ -z "$OUTPUT_DIR" ]]; then
+        local base_parent
+        base_parent="$(cd "$SCRIPT_DIR/../.." && pwd)"
+        OUTPUT_DIR="${base_parent}/${TARGET}"
+    fi
+
+    local url_field
+    if [[ "$PROTOCOL" == "ssh" ]]; then
+        url_field="ssh_url"
+    else
+        url_field="clone_url"
+    fi
+
+    echo ""
+    echo "======================================================"
+    echo "⚙️  Configuration:"
+    echo "   Target Account:  $TARGET"
+    echo "   Protocol:        $(echo "$PROTOCOL" | tr '[:lower:]' '[:upper:]')"
+    echo "   Destination:     $OUTPUT_DIR"
+    echo "   Dry Run Mode:    $DRY_RUN"
+    echo "======================================================"
+    echo ""
+
+    # Create destination directory if not in dry-run
+    if [ "$DRY_RUN" = false ] && [ ! -d "$OUTPUT_DIR" ]; then
+        log_info "Creating destination directory: '$OUTPUT_DIR'..."
+        mkdir -p "$OUTPUT_DIR"
+    fi
+
+    log_info "Verifying profile for '$TARGET' on GitHub..."
+    local api_endpoint
+    if ! api_endpoint="$(detect_account_type "$TARGET")"; then
+        exit 1
+    fi
+
+    log_info "Account identified as: $api_endpoint"
+    log_info "Fetching repositories list..."
+
+    local auth_header
+    auth_header="$(get_auth_headers)"
+    local per_page=100
+    local page=1
+    local total_processed=0
+
+    while : ; do
+        local response
+        if [[ -n "$auth_header" ]]; then
+            # shellcheck disable=SC2086
+            response="$(curl -s $auth_header "https://api.github.com/${api_endpoint}/${TARGET}/repos?page=${page}&per_page=${per_page}")"
+        else
+            response="$(curl -s "https://api.github.com/${api_endpoint}/${TARGET}/repos?page=${page}&per_page=${per_page}")"
+        fi
+
+        # Check for rate limit or API error
+        if echo "$response" | grep -q '"message":'; then
+            local api_msg
+            api_msg="$(echo "$response" | sed -n -E 's/.*"message": *"([^"]*)".*/\1/p' | head -n 1)"
+            if [[ -n "$api_msg" ]]; then
+                log_warn "GitHub API response: $api_msg"
+                break
+            fi
+        fi
+
+        local repo_urls
+        repo_urls="$(extract_repo_urls "$response" "$url_field")"
+
+        if [[ -z "$repo_urls" ]]; then
+            break
+        fi
+
+        while IFS= read -r repo_url; do
+            [[ -n "$repo_url" ]] || continue
+
+            local repo_name
+            repo_name="$(basename "$repo_url" .git)"
+            local repo_path="${OUTPUT_DIR}/${repo_name}"
+
+            total_processed=$((total_processed + 1))
+
+            if [ -d "$repo_path" ]; then
+                if [ "$DRY_RUN" = true ]; then
+                    log_info "[DRY-RUN] Would update '$repo_name' (git pull in $repo_path)"
+                else
+                    log_info "Updating '$repo_name' via git pull..."
+                    git -C "$repo_path" pull --ff-only || log_warn "Pull failed for '$repo_name', skipping..."
+                fi
+            else
+                if [ "$DRY_RUN" = true ]; then
+                    log_info "[DRY-RUN] Would clone '$repo_name' from $repo_url to $repo_path"
+                else
+                    log_info "Cloning '$repo_name'..."
+                    git clone "$repo_url" "$repo_path" || log_warn "Clone failed for '$repo_name', skipping..."
+                fi
+            fi
+        done <<< "$repo_urls"
+
+        page=$((page + 1))
+    done
+
+    echo ""
+    log_success "Completed processing $total_processed repository/repositories."
+    log_info "Location: $OUTPUT_DIR"
+}
+
+main "$@"
