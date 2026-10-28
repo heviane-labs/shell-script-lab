@@ -18,6 +18,7 @@ Welcome! This repository (`shell-script-lab`) is an automated learning and devel
   * All commit messages must follow Conventional Commits in English (e.g., `feat(scripts): add network health monitor`, `fix(cli): handle empty target error`).
 * **Documentation (`docs/`):**
   * Educational notes directed to human learners may be bilingual or in Portuguese when updating existing study guides, but **all embedded code snippets and script names must remain in English**.
+  * **Third-Party Service & API Disclaimer Rule:** Whenever documentation (`docs/*.md`) references third-party services, APIs (e.g., GitHub REST API), external CLI tools (`jq`, `gh`), rate limits, or package managers (`winget`, `apt`, `brew`), you MUST ALWAYS include a GitHub alert callout (`> [!NOTE]`) warning that third-party specifications, endpoints, and policies may change over time, stating the date of reference and linking to the official vendor documentation.
 
 ---
 

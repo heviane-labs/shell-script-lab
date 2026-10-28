@@ -1,5 +1,9 @@
 # 🐙 Sincronização de Repositórios GitHub (`sync-github-repos.sh`)
 
+> [!NOTE]
+> **Aviso sobre Informações de Terceiros e Validade Temporal:**  
+> As informações sobre limites de requisições, endpoints da REST API do GitHub e comandos de instalação de utilitários externos (`jq`, `gh`, `winget`, `brew`, `apt`) refletem as especificações vigentes no momento da elaboração deste guia (Outubro/2026). Políticas, versões e limites de serviços de terceiros podem sofrer alterações ao longo do tempo. Em caso de divergência ou comportamento inesperado, consulte sempre a [Documentação Oficial da REST API do GitHub](https://docs.github.com/rest).
+
 O script [`sync-github-repos.sh`](../scripts/sync-github-repos.sh) automatiza o processo de clonagem e atualização em lote de repositórios do GitHub para uma determinada conta ou organização.
 
 Ele foi construído para funcionar tanto de forma **interativa** (via assistente no terminal) quanto **programática** (via argumentos de linha de comando), com suporte a modo de simulação (*dry-run*), detecção automática de credenciais e paginação da API do GitHub.

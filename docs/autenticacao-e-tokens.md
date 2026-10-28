@@ -1,5 +1,9 @@
 # 🔐 Guia de Autenticação e Gerenciamento Seguro de Tokens
 
+> [!NOTE]
+> **Aviso sobre Informações de Terceiros e Validade Temporal:**  
+> Os tipos de tokens, escopos de segurança (`repo`), limites de requisições por hora e comandos da ferramenta `gh` são definidos e mantidos pela plataforma GitHub (referência: Outubro/2026). Políticas de autenticação e fluxos de credenciais de terceiros podem ser alterados ou depreciados pelos fornecedores. Consulte sempre a [Documentação Oficial de Autenticação do GitHub](https://docs.github.com/authentication).
+
 Este guia documenta as **3 formas recomendadas** de gerenciar e armazenar tokens de acesso pessoal (PAT) ou credenciais do GitHub no seu ambiente de desenvolvimento, além dos métodos de **conferência e validação** para cada uma delas.
 
 ---
@@ -155,3 +159,4 @@ Se por engano você colar um token em um chat público, commit ou screenshot:
 2. Localize o token comprometido na lista e clique em **Delete / Revoke**.
 3. Gere um novo token e atualize seu `.env` ou `~/.bashrc`.
 *(Tokens revogados deixam de funcionar instantaneamente em todo o mundo).*
+
