@@ -1,6 +1,6 @@
-# 🐙 Clonagem e Sincronização de Repositórios GitHub (`clone-github-repos.sh`)
+# 🐙 Sincronização de Repositórios GitHub (`sync-github-repos.sh`)
 
-O script [`clone-github-repos.sh`](../scripts/clone-github-repos.sh) automatiza o processo de clonagem e atualização em lote de repositórios do GitHub para uma determinada conta ou organização.
+O script [`sync-github-repos.sh`](../scripts/sync-github-repos.sh) automatiza o processo de clonagem e atualização em lote de repositórios do GitHub para uma determinada conta ou organização.
 
 Ele foi construído para funcionar tanto de forma **interativa** (via assistente no terminal) quanto **programática** (via argumentos de linha de comando), com suporte a modo de simulação (*dry-run*), detecção automática de credenciais e paginação da API do GitHub.
 
@@ -12,7 +12,7 @@ Ele foi construído para funcionar tanto de forma **interativa** (via assistente
 Recomendado para uso manual no dia a dia. Basta rodar o script sem nenhum argumento:
 
 ```bash
-./scripts/clone-github-repos.sh
+./scripts/sync-github-repos.sh
 ```
 
 O script exibirá um menu numerado para:
@@ -39,17 +39,17 @@ Ideal para automações, rotinas de backup ou quem prefere comandos diretos sem 
 * **Simulação de execução (Dry-Run):**
   Lista todos os repositórios que seriam clonados ou atualizados sem fazer nenhum download:
   ```bash
-  ./scripts/clone-github-repos.sh --target heviane-labs --dry-run
+  ./scripts/sync-github-repos.sh --target heviane-labs --dry-run
   ```
 
-* **Clonar todos os repositórios de uma organização via HTTPS:**
+* **Clonar/atualizar todos os repositórios de uma organização via HTTPS:**
   ```bash
-  ./scripts/clone-github-repos.sh --target heviane-labs
+  ./scripts/sync-github-repos.sh --target heviane-labs
   ```
 
-* **Clonar via SSH especificando um diretório de destino:**
+* **Sincronizar via SSH especificando um diretório de destino:**
   ```bash
-  ./scripts/clone-github-repos.sh --target heviane --protocol ssh --output-dir /e/Projetos/Backup
+  ./scripts/sync-github-repos.sh --target heviane --protocol ssh --output-dir /e/Projetos/Backup
   ```
 
 ---
@@ -109,7 +109,7 @@ Se preferir usar um Token de Acesso Pessoal clássico (Personal Access Token - P
 3. No seu terminal, defina a variável antes de executar o script:
    ```bash
    export GITHUB_TOKEN="ghp_seuTokenAqui..."
-   ./scripts/clone-github-repos.sh --target heviane-labs
+   ./scripts/sync-github-repos.sh --target heviane-labs
    ```
 
 ---
@@ -118,3 +118,4 @@ Se preferir usar um Token de Acesso Pessoal clássico (Personal Access Token - P
 
 * **Idempotente:** O script pode ser executado repetidamente com segurança. Se o repositório já existir na pasta de destino, ele executa um `git pull --ff-only` para atualizá-lo; se não existir, realiza o `git clone`.
 * **Fim de Linha e Tratamento de Erros:** Segue rigorosamente o padrão `set -euo pipefail` e captura de encerramento via `trap cleanup`.
+
