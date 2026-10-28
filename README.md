@@ -10,6 +10,7 @@ Este repositório serve como um ambiente de testes, documentação e desenvolvim
 
 * ➡️ **[Conceitos Fundamentais e Teoria](./docs/index.md)**: Roadmap de aprendizado do iniciante ao avançado.
 * ➡️ **[Catálogo de Scripts](./scripts/index.md)**: Todos os scripts disponíveis, templates e exemplos.
+* ➡️ **[Guia de Autenticação e Tokens](./docs/autenticacao-e-tokens.md)**: Como gerenciar segredos e tokens com segurança.
 * ➡️ **[Diretrizes de IA (AGENTS.md)](./AGENTS.md)**: Padrões de engenharia e regras de desenvolvimento.
 
 ---

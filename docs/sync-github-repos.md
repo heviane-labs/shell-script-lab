@@ -102,15 +102,22 @@ Se precisar se autenticar no `gh` em um novo computador:
 gh auth login
 ```
 
-### Método 2: Variável de Ambiente `GITHUB_TOKEN`
-Se preferir usar um Token de Acesso Pessoal clássico (Personal Access Token - PAT):
-1. Acesse o GitHub: **Settings** ➔ **Developer Settings** ➔ **Personal access tokens** ➔ **Tokens (classic)**.
-2. Crie um token com o escopo `repo` (para permitir clonar repositórios privados) ou apenas leitura.
-3. No seu terminal, defina a variável antes de executar o script:
-   ```bash
-   export GITHUB_TOKEN="ghp_seuTokenAqui..."
-   ./scripts/sync-github-repos.sh --target heviane-labs
-   ```
+### Método 2: Arquivo Local `.env`
+Você pode salvar o token em um arquivo `.env` na raiz do projeto (copiando o `.env.example`):
+```bash
+cp .env.example .env
+# Em seguida, edite o .env e adicione seu token
+```
+O script lerá o token automaticamente de lá, e o arquivo já está protegido no `.gitignore`.
+
+### Método 3: Variável de Ambiente `GITHUB_TOKEN` (ou `~/.bashrc`)
+Se preferir exportar manualmente ou configurar no seu `~/.bashrc`:
+```bash
+export GITHUB_TOKEN="ghp_seuTokenAqui..."
+./scripts/sync-github-repos.sh --target heviane-labs
+```
+
+> 📖 Para um guia completo com passo a passo e testes de conferência para cada uma das opções, consulte o **[Guia de Autenticação e Tokens](./autenticacao-e-tokens.md)**.
 
 ---
 

@@ -77,8 +77,15 @@ EOF
 get_auth_headers() {
     local token=""
 
+    # 1. Environment variable (e.g. from ~/.bashrc or terminal export)
     if [[ -n "${GITHUB_TOKEN:-}" ]]; then
         token="$GITHUB_TOKEN"
+    # 2. Local .env file in repository root or current directory
+    elif [[ -f "$SCRIPT_DIR/../.env" ]]; then
+        token="$(grep -E '^GITHUB_TOKEN=' "$SCRIPT_DIR/../.env" | head -n 1 | cut -d '=' -f 2- | tr -d '"' | tr -d "'" | tr -d '\r')"
+    elif [[ -f "$PWD/.env" ]]; then
+        token="$(grep -E '^GITHUB_TOKEN=' "$PWD/.env" | head -n 1 | cut -d '=' -f 2- | tr -d '"' | tr -d "'" | tr -d '\r')"
+    # 3. GitHub CLI system credentials (gh auth login)
     elif command -v gh >/dev/null 2>&1; then
         token="$(gh auth token 2>/dev/null || true)"
     fi
