@@ -1,0 +1,120 @@
+# 🐙 Clonagem e Sincronização de Repositórios GitHub (`clone-github-repos.sh`)
+
+O script [`clone-github-repos.sh`](../scripts/clone-github-repos.sh) automatiza o processo de clonagem e atualização em lote de repositórios do GitHub para uma determinada conta ou organização.
+
+Ele foi construído para funcionar tanto de forma **interativa** (via assistente no terminal) quanto **programática** (via argumentos de linha de comando), com suporte a modo de simulação (*dry-run*), detecção automática de credenciais e paginação da API do GitHub.
+
+---
+
+## 🚀 Formas de Execução
+
+### 1. Modo Interativo (Assistente no Terminal)
+Recomendado para uso manual no dia a dia. Basta rodar o script sem nenhum argumento:
+
+```bash
+./scripts/clone-github-repos.sh
+```
+
+O script exibirá um menu numerado para:
+1. Escolher a conta (`heviane`, `heviane-labs`, `heviane-learning` ou informar outra manualmente).
+2. Selecionar o protocolo de rede (`HTTPS` ou `SSH`).
+3. Confirmar ou customizar o diretório de destino local.
+
+---
+
+### 2. Modo Linha de Comando (CLI com Flags)
+Ideal para automações, rotinas de backup ou quem prefere comandos diretos sem perguntas.
+
+#### Opções Disponíveis (`--help`):
+| Flag | Descrição | Valor Padrão |
+| :--- | :--- | :--- |
+| `-h, --help` | Exibe a mensagem de ajuda e encerra | - |
+| `-t, --target <CONTA>` | Nome do usuário ou organização no GitHub | - |
+| `-p, --protocol <PROTO>` | Protocolo de conexão: `https` ou `ssh` | `https` |
+| `-o, --output-dir <DIR>` | Diretório local de destino dos clones | `../<CONTA>` |
+| `-d, --dry-run` | Simula a execução sem clonar ou atualizar nada | `false` |
+
+#### Exemplos de Uso:
+
+* **Simulação de execução (Dry-Run):**
+  Lista todos os repositórios que seriam clonados ou atualizados sem fazer nenhum download:
+  ```bash
+  ./scripts/clone-github-repos.sh --target heviane-labs --dry-run
+  ```
+
+* **Clonar todos os repositórios de uma organização via HTTPS:**
+  ```bash
+  ./scripts/clone-github-repos.sh --target heviane-labs
+  ```
+
+* **Clonar via SSH especificando um diretório de destino:**
+  ```bash
+  ./scripts/clone-github-repos.sh --target heviane --protocol ssh --output-dir /e/Projetos/Backup
+  ```
+
+---
+
+## 🧩 O que é o `jq` e Como Instalar?
+
+### O que é?
+O **[`jq`](https://jqlang.github.io/jq/)** é um utilitário de linha de comando leve e poderoso projetado para fatiar, filtrar e transformar dados no formato **JSON**. No ecossistema Shell, ele é o equivalente a um *"sed/awk voltado para JSON"*.
+
+Como a API do GitHub responde em JSON, o script utiliza o `jq` para extrair de forma precisa as URLs dos repositórios (`clone_url` ou `ssh_url`).
+
+> 💡 **Nota de Compatibilidade:** O script possui um mecanismo de *fallback* automático. Se o `jq` não estiver instalado, ele utiliza filtros via `grep` e `sed`. No entanto, ter o `jq` instalado garante maior robustez.
+
+### Como Instalar:
+
+* **Windows (via PowerShell):**
+  ```powershell
+  winget install jqlang.jq
+  # ou via Chocolatey: choco install jq
+  # ou via Scoop:      scoop install jq
+  ```
+* **No Dev Container deste repositório (Ubuntu):**
+  O `jq` já vem instalado de fábrica na imagem Docker. Se estiver em outro ambiente Debian/Ubuntu:
+  ```bash
+  sudo apt-get update && sudo apt-get install -y jq
+  ```
+* **macOS:**
+  ```bash
+  brew install jq
+  ```
+
+---
+
+## 🔑 Autenticação e Limites da API (Tokens)
+
+Por padrão, a API do GitHub permite consultas anônimas a repositórios públicos. No entanto, existem diferenças fundamentais:
+
+| Modo | Limite da API | Acesso a Repositórios |
+| :--- | :--- | :--- |
+| **Sem Token (Anônimo)** | **60 requisições / hora** por IP | Somente repositórios públicos |
+| **Com Token Autenticado** | **5.000 requisições / hora** | Repositórios públicos e **privados** |
+
+O script busca e aplica seu token automaticamente seguindo a ordem abaixo:
+
+### Método 1: GitHub CLI (`gh`) — Recomendado
+Se você tem o GitHub CLI (`gh`) configurado na sua máquina, o script detecta o token automaticamente através de `gh auth token`. Nenhuma configuração extra é necessária.
+
+Se precisar se autenticar no `gh` em um novo computador:
+```bash
+gh auth login
+```
+
+### Método 2: Variável de Ambiente `GITHUB_TOKEN`
+Se preferir usar um Token de Acesso Pessoal clássico (Personal Access Token - PAT):
+1. Acesse o GitHub: **Settings** ➔ **Developer Settings** ➔ **Personal access tokens** ➔ **Tokens (classic)**.
+2. Crie um token com o escopo `repo` (para permitir clonar repositórios privados) ou apenas leitura.
+3. No seu terminal, defina a variável antes de executar o script:
+   ```bash
+   export GITHUB_TOKEN="ghp_seuTokenAqui..."
+   ./scripts/clone-github-repos.sh --target heviane-labs
+   ```
+
+---
+
+## 🛡️ Segurança e Idempotência
+
+* **Idempotente:** O script pode ser executado repetidamente com segurança. Se o repositório já existir na pasta de destino, ele executa um `git pull --ff-only` para atualizá-lo; se não existir, realiza o `git clone`.
+* **Fim de Linha e Tratamento de Erros:** Segue rigorosamente o padrão `set -euo pipefail` e captura de encerramento via `trap cleanup`.

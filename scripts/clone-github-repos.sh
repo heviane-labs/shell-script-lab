@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Script: script-to-clone-all-repositories.sh
+# Script: clone-github-repos.sh
 # Description: Clones or synchronizes all GitHub repositories for a given account or organization.
 # Category: Automation
 # Author: Heviane

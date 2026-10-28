@@ -10,8 +10,8 @@ Esta pasta reúne scripts utilitários, exemplos práticos e templates para auto
 
 | Script | Descrição | Categoria |
 | --- | --- | --- |
+| [clone-github-repos.sh](./clone-github-repos.sh) | Clones or synchronizes all GitHub repositories for a given account or organization. | Automation |
 | [hello-world.sh](./hello-world.sh) | Introductory script demonstrating variables, shebang, interpolation, | Basics |
-| [script-to-clone-all-repositories.sh](./script-to-clone-all-repositories.sh) | Clones or synchronizes all GitHub repositories for a given account or organization. | Automation |
 | [system-info.sh](./system-info.sh) | Gathers and displays basic system environment, user, and disk metrics. | System |
 | [template.sh](./template.sh) | Canonical production-grade baseline template with robust error | Template |
 | [update-index.sh](./update-index.sh) | Automatically inspects scripts/*.sh metadata headers and regenerates | Utility |
