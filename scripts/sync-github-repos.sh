@@ -88,8 +88,10 @@ is_token_valid() {
 get_token() {
     # 1. Environment variable (e.g. from ~/.bashrc or terminal export)
     if [[ -n "${GITHUB_TOKEN:-}" ]]; then
-        if is_token_valid "$GITHUB_TOKEN"; then
-            echo "$GITHUB_TOKEN"
+        local env_var_token
+        env_var_token="$(echo "$GITHUB_TOKEN" | tr -d '\r')"
+        if is_token_valid "$env_var_token"; then
+            echo "$env_var_token"
             return 0
         else
             log_warn "Active GITHUB_TOKEN is invalid or revoked (Bad credentials)."
@@ -114,9 +116,10 @@ get_token() {
     fi
 
     # 3. GitHub CLI system credentials (gh auth login)
+    # Use 'env -u GITHUB_TOKEN' to bypass any broken environment variable in the active shell
     if command -v gh >/dev/null 2>&1; then
         local gh_token
-        gh_token="$(gh auth token 2>/dev/null || true)"
+        gh_token="$(env -u GITHUB_TOKEN gh auth token 2>/dev/null | tr -d '\r' || true)"
         if [[ -n "$gh_token" ]] && is_token_valid "$gh_token"; then
             log_info "Using valid credentials from GitHub CLI (gh)." >&2
             echo "$gh_token"
@@ -336,7 +339,9 @@ main() {
     elif [[ -n "$auth_user" && "${TARGET,,}" == "${auth_user,,}" ]]; then
         repos_api_url="https://api.github.com/user/repos?affiliation=owner&visibility=all"
     else
-        repos_api_url="https://api.github.com/users/${TARGET}/repos?type=all"
+        # For user accounts, type=owner ensures only repositories owned by TARGET are returned,
+        # avoiding pulling repositories from organizations where TARGET is merely a member.
+        repos_api_url="https://api.github.com/users/${TARGET}/repos?type=owner"
     fi
 
     while : ; do
