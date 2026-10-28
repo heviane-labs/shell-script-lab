@@ -74,7 +74,7 @@ EOF
 # ------------------------------------------------------------------------------
 # Helper Functions
 # ------------------------------------------------------------------------------
-get_auth_headers() {
+get_token() {
     local token=""
 
     # 1. Environment variable (e.g. from ~/.bashrc or terminal export)
@@ -90,9 +90,7 @@ get_auth_headers() {
         token="$(gh auth token 2>/dev/null || true)"
     fi
 
-    if [[ -n "$token" ]]; then
-        echo "-H Authorization: Bearer $token"
-    fi
+    echo "$token"
 }
 
 extract_repo_urls() {
@@ -110,17 +108,14 @@ extract_repo_urls() {
 
 detect_account_type() {
     local target="$1"
-    local auth_header
-    auth_header="$(get_auth_headers)"
+    local token="$2"
+    local auth_header=()
+    if [[ -n "$token" ]]; then
+        auth_header=(-H "Authorization: Bearer $token")
+    fi
     local account_info
 
-    if [[ -n "$auth_header" ]]; then
-        # Word splitting intentional for curl header arguments
-        # shellcheck disable=SC2086
-        account_info="$(curl -s $auth_header "https://api.github.com/users/${target}")"
-    else
-        account_info="$(curl -s "https://api.github.com/users/${target}")"
-    fi
+    account_info="$(curl -s "${auth_header[@]}" "https://api.github.com/users/${target}")"
 
     if echo "$account_info" | grep -q '"message": *"Not Found"'; then
         log_error "GitHub account or organization '$target' not found."
@@ -274,29 +269,45 @@ main() {
         mkdir -p "$OUTPUT_DIR"
     fi
 
+    local token
+    token="$(get_token)"
+    local auth_header=()
+    if [[ -n "$token" ]]; then
+        auth_header=(-H "Authorization: Bearer $token")
+    fi
+
     log_info "Verifying profile for '$TARGET' on GitHub..."
     local api_endpoint
-    if ! api_endpoint="$(detect_account_type "$TARGET")"; then
+    if ! api_endpoint="$(detect_account_type "$TARGET" "$token")"; then
         exit 1
     fi
 
     log_info "Account identified as: $api_endpoint"
     log_info "Fetching repositories list..."
 
-    local auth_header
-    auth_header="$(get_auth_headers)"
     local per_page=100
     local page=1
     local total_processed=0
 
+    # Determine authenticated user to allow listing private repos
+    local auth_user=""
+    if [[ -n "$token" ]]; then
+        auth_user="$(curl -s "${auth_header[@]}" "https://api.github.com/user" | grep -E '"login":' | head -n 1 | sed -E 's/.*"login": *"([^"]*)".*/\1/' || true)"
+    fi
+
+    # Build the endpoint URL (including private repos when authorized)
+    local repos_api_url=""
+    if [[ "$api_endpoint" == "orgs" ]]; then
+        repos_api_url="https://api.github.com/orgs/${TARGET}/repos?type=all"
+    elif [[ -n "$auth_user" && "${TARGET,,}" == "${auth_user,,}" ]]; then
+        repos_api_url="https://api.github.com/user/repos?affiliation=owner&visibility=all"
+    else
+        repos_api_url="https://api.github.com/users/${TARGET}/repos?type=all"
+    fi
+
     while : ; do
         local response
-        if [[ -n "$auth_header" ]]; then
-            # shellcheck disable=SC2086
-            response="$(curl -s $auth_header "https://api.github.com/${api_endpoint}/${TARGET}/repos?page=${page}&per_page=${per_page}")"
-        else
-            response="$(curl -s "https://api.github.com/${api_endpoint}/${TARGET}/repos?page=${page}&per_page=${per_page}")"
-        fi
+        response="$(curl -s "${auth_header[@]}" "${repos_api_url}&page=${page}&per_page=${per_page}")"
 
         # Check for rate limit or API error
         if echo "$response" | grep -q '"message":'; then
