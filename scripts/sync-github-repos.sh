@@ -74,23 +74,57 @@ EOF
 # ------------------------------------------------------------------------------
 # Helper Functions
 # ------------------------------------------------------------------------------
-get_token() {
-    local token=""
+is_token_valid() {
+    local t="$1"
+    [[ -n "$t" ]] || return 1
+    local check
+    check="$(curl -s -H "Authorization: Bearer $t" "https://api.github.com/user" | grep -E '"message": *"Bad credentials"' || true)"
+    if [[ -n "$check" ]]; then
+        return 1
+    fi
+    return 0
+}
 
+get_token() {
     # 1. Environment variable (e.g. from ~/.bashrc or terminal export)
     if [[ -n "${GITHUB_TOKEN:-}" ]]; then
-        token="$GITHUB_TOKEN"
-    # 2. Local .env file in repository root or current directory
-    elif [[ -f "$SCRIPT_DIR/../.env" ]]; then
-        token="$(grep -E '^GITHUB_TOKEN=' "$SCRIPT_DIR/../.env" | head -n 1 | cut -d '=' -f 2- | tr -d '"' | tr -d "'" | tr -d '\r')"
-    elif [[ -f "$PWD/.env" ]]; then
-        token="$(grep -E '^GITHUB_TOKEN=' "$PWD/.env" | head -n 1 | cut -d '=' -f 2- | tr -d '"' | tr -d "'" | tr -d '\r')"
-    # 3. GitHub CLI system credentials (gh auth login)
-    elif command -v gh >/dev/null 2>&1; then
-        token="$(gh auth token 2>/dev/null || true)"
+        if is_token_valid "$GITHUB_TOKEN"; then
+            echo "$GITHUB_TOKEN"
+            return 0
+        else
+            log_warn "Active GITHUB_TOKEN is invalid or revoked (Bad credentials)."
+        fi
     fi
 
-    echo "$token"
+    # 2. Local .env file in repository root or current directory
+    local env_token=""
+    if [[ -f "$SCRIPT_DIR/../.env" ]]; then
+        env_token="$(grep -E '^GITHUB_TOKEN=' "$SCRIPT_DIR/../.env" | head -n 1 | cut -d '=' -f 2- | tr -d '"' | tr -d "'" | tr -d '\r')"
+    elif [[ -f "$PWD/.env" ]]; then
+        env_token="$(grep -E '^GITHUB_TOKEN=' "$PWD/.env" | head -n 1 | cut -d '=' -f 2- | tr -d '"' | tr -d "'" | tr -d '\r')"
+    fi
+
+    if [[ -n "$env_token" ]]; then
+        if is_token_valid "$env_token"; then
+            echo "$env_token"
+            return 0
+        else
+            log_warn "Token in .env is invalid or revoked (Bad credentials)."
+        fi
+    fi
+
+    # 3. GitHub CLI system credentials (gh auth login)
+    if command -v gh >/dev/null 2>&1; then
+        local gh_token
+        gh_token="$(gh auth token 2>/dev/null || true)"
+        if [[ -n "$gh_token" ]] && is_token_valid "$gh_token"; then
+            log_info "Using valid credentials from GitHub CLI (gh)." >&2
+            echo "$gh_token"
+            return 0
+        fi
+    fi
+
+    echo ""
 }
 
 extract_repo_urls() {
