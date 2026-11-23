@@ -27,20 +27,27 @@ Welcome! This repository (`shell-script-lab`) is an automated learning and devel
 Every script must follow these safety and quality requirements:
 
 ### A. Shebang & Safety Flags
+
 * Use portable bash shebang:
+
   ```bash
   #!/usr/bin/env bash
   ```
+
 * Enforce strict error handling at the very beginning of the script:
+
   ```bash
   set -euo pipefail
   ```
+
   * `-e`: Exit immediately if any command exits with a non-zero status.
   * `-u`: Treat unset/unbound variables as an error and exit immediately.
   * `-o pipefail`: Return the exit status of the last command in the pipeline that failed.
 
 ### B. Cleanups and Signals
+
 * Always handle script terminations and cleanup temporary files using `trap`:
+
   ```bash
   cleanup() {
     local exit_code=$?
@@ -51,14 +58,18 @@ Every script must follow these safety and quality requirements:
   ```
 
 ### C. Variables & Functions
+
 * **Variable Scope:** Always declare variables inside functions with `local`.
+
   ```bash
   my_function() {
     local file_path="$1"
     local count=0
   }
   ```
+
 * **Quotes:** ALWAYS quote variable references to prevent word splitting and glob expansion:
+
   ```bash
   # Good
   rm -f "$target_file"
@@ -67,11 +78,13 @@ Every script must follow these safety and quality requirements:
   # Bad
   rm -f $target_file
   ```
+
 * **Naming Conventions:**
   * Constants / Global read-only: `SCREAMING_SNAKE_CASE` (e.g., `readonly SCRIPT_DIR="..."`).
   * Local variables & function names: `snake_case` (e.g., `local file_name`, `process_file()`).
 
 ### D. CLI Interface & Dry-Run Support
+
 * Every non-trivial script must support:
   * `-h, --help`: Displays usage, options, and examples.
   * `--dry-run`: Mandatory for scripts performing destructive or file-modifying operations (deletions, bulk moves, external API writes).
@@ -107,30 +120,76 @@ Before completing any task, an AI agent must verify:
 
 1. **Syntax Check:**
    Ensure the script passes bash syntax validation:
+
    ```bash
    bash -n scripts/your-script.sh
    ```
+
 2. **Static Analysis (ShellCheck):**
    Scripts must pass ShellCheck without errors or warnings:
+
    ```bash
    shellcheck scripts/your-script.sh
    ```
+
 3. **Automated Unit Tests (BATS):**
    * Every new script must have a corresponding test file in `tests/<script-name>.bats`.
    * Run the test suite:
+
    ```bash
    bats tests/
    ```
+
 4. **Catalog Index Synchronization:**
    * Whenever a script is created, modified, or removed, the scripts index catalog must be synchronized:
+
    ```bash
    ./scripts/update-index.sh
    ```
+
    Verify with `bash scripts/update-index.sh --check`.
 
 ---
 
 ## 💡 5. Canonical Script Template
 
-When generating a new script, use [`scripts/template.sh`](file:///e:/Projects/GitHub_Old2/heviane-labs/shell-script-lab/scripts/template.sh) as the baseline structure.
+When generating a new script, use [`scripts/template.sh`](./scripts/template.sh) as the baseline structure.
 
+---
+
+## 📝 6. Commit Standards (Conventional Commits)
+
+All commit messages created or suggested by AI agents must strictly follow the **Conventional Commits** specification:
+
+```text
+<type>(<scope>): <short description in english imperative>
+
+[optional body explaining motivation]
+
+[optional footer referencing issues, e.g. Closes #12]
+```
+
+### Allowed Types:
+
+* `feat`: New shell script, CLI utility, or capability.
+* `fix`: Bug fix in existing shell scripts or test suites.
+* `refactor`: Structural refactoring without altering CLI behaviour.
+* `test`: Adding or updating BATS unit tests or syntax checks.
+* `docs`: Documentation, study notes, or guide updates.
+* `chore`: Maintenance of linters, devcontainers, or build tasks.
+* `perf`: Performance optimizations in script execution or I/O.
+
+### Recommended Canonical Scopes:
+
+* `scripts`: Automation and utility shell scripts (`scripts/`).
+* `tests`: BATS automated unit test suites (`tests/`).
+* `docs`: Architecture, study materials, and guidelines (`docs/`).
+* `ci`: GitHub Actions workflows and ShellCheck automation.
+* `docker`: DevContainer, Dockerfile, or containerized environments.
+
+### Mandatory Rules for Atomicity and Language:
+
+1. **Atomic Commits (Single-Purpose):** Every commit MUST serve a single logical purpose. Never mix script refactoring with documentation or test updates.
+2. **Clean Revertability:** Commits must be self-contained so that `git revert <hash>` undoes the change cleanly without collateral effects.
+3. **Always Green State:** No intermediate commit should break the repository. ShellCheck, syntax check (`bash -n`), and BATS tests must pass on every commit.
+4. **Canonical English & Imperative Mood:** All commit messages MUST be written in **English** using imperative verbs (`add`, `fix`, `sync`, `enforce`, `bump`, `polish`, `remove`).
