@@ -29,7 +29,7 @@ Welcome! This repository (`shell-script-lab`) is an automated learning and devel
 3. **Surgical Modification (Minimal Diff):** Make focused, minimal edits. Do not rewrite entire files or modules just to adjust specific lines, and preserve existing formatting and conventions.
 4. **Evidence-Based Completion:** Validate your delivery by running automated test suites (BATS, syntax checks, linters) before considering work finished. Never declare a task complete without verifiable terminal output.
 5. **Dependency Parsimony & Security:** Do not install third-party tools, packages, or libraries without prior approval and compatibility verification.
-6. **Security First (Zero Secrets):** Never commit or expose credentials, API keys, tokens, certificates, or sensitive personal data.
+6. **Security First (Zero Secrets & Host Privacy):** Never commit or expose credentials, API keys, tokens, certificates, sensitive personal data, or absolute local host paths (e.g., drive letters or internal user directory structures). In public documentation, tests, and examples, strictly use relative paths, environment variables, or conceptual placeholders (e.g., `<workspace-root>`, `<cloud-vault>`).
 7. **Living Documentation in Commit Cycle:** Keep documentation, index catalogs, and test specifications perfectly synchronized within the same commit cycle as code changes.
 8. **Defensive Asset Preservation:** Never overwrite or delete configuration files, inventories, or governance scripts without explicit consent.
 9. **Cross-Platform Integrity & Encoding:** Rigorously respect line endings (LF) and encoding conventions from `.editorconfig`. PowerShell scripts (`.ps1`) must be saved with UTF-8 BOM (`0xEF, 0xBB, 0xBF`) for native Windows PowerShell 5.1 compatibility.
