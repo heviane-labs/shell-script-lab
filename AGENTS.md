@@ -22,7 +22,27 @@ Welcome! This repository (`shell-script-lab`) is an automated learning and devel
 
 ---
 
-## 🛡️ 2. Shell Scripting Standards (Bash Best Practices)
+## 🛡️ 2. Universal Golden Rules (Inviolable)
+
+1. **Human-in-the-Loop (Mandatory Prior Approval):** The agent MUST ALWAYS present the plan and request explicit approval from the developer before modifying files, executing environment-altering commands, or making commits/pushes.
+2. **Anti-Lazy Code (Complete Implementation):** Never omit code or documentation with ellipses or shortcut comments (`// ... rest of code ...`). Deliver complete, functional, and ready-to-run content.
+3. **Surgical Modification (Minimal Diff):** Make focused, minimal edits. Do not rewrite entire files or modules just to adjust specific lines, and preserve existing formatting and conventions.
+4. **Evidence-Based Completion:** Validate your delivery by running automated test suites (BATS, syntax checks, linters) before considering work finished. Never declare a task complete without verifiable terminal output.
+5. **Dependency Parsimony & Security:** Do not install third-party tools, packages, or libraries without prior approval and compatibility verification.
+6. **Security First (Zero Secrets):** Never commit or expose credentials, API keys, tokens, certificates, or sensitive personal data.
+7. **Living Documentation in Commit Cycle:** Keep documentation, index catalogs, and test specifications perfectly synchronized within the same commit cycle as code changes.
+8. **Defensive Asset Preservation:** Never overwrite or delete configuration files, inventories, or governance scripts without explicit consent.
+9. **Cross-Platform Integrity & Encoding:** Rigorously respect line endings (LF) and encoding conventions from `.editorconfig`. PowerShell scripts (`.ps1`) must be saved with UTF-8 BOM (`0xEF, 0xBB, 0xBF`) for native Windows PowerShell 5.1 compatibility.
+10. **Documentation Trigger in New Directories (README Heuristic):** When creating any significant new directory (modules, templates, test suites, or utilities), the agent MUST ALWAYS evaluate the need for an explanatory `README.md`. Avoid mute directories across the repository.
+11. **Single-Topic Living Dossier Pattern:** When conducting reviews, multi-model audits, or governance improvements, keep each dossier strictly single-topic and atomic. Create the plan in `reviews/active/[SEQ]-[DATE]-[TARGET]-[TOPIC]-plano-mestre.md` at minute zero and maintain it alive until archived in `reviews/archive/`.
+12. **Strict Scaffolding Isolation (Sandbox Hygiene):** Automated or manual tests of code generators, bootstrap scripts, or scaffolding must NEVER be executed from the root of an active repository. Run exclusively within an isolated temporary sandbox (`$TMPDIR` or `/tmp`), with compulsory cleanup (`trap` / `teardown`).
+13. **Multi-Shell Interoperability in CLI Commands (Safe CLI Chaining):** When executing terminal commands on Windows, respect compatibility with PowerShell 5.1 and 7+, NEVER using `&&` (invalid in native PS 5.1). Use `; if ($?) { ... }` for safe conditional chaining.
+14. **Bidirectional Documentation Linking (Graph Interconnection):** When creating any new documentation or governance file (`README.md`, `SPEC.md`, `ADR.md`), map adjacent artifacts and add cross-cutting bidirectional links to avoid orphan documents.
+15. **Canonical Placeholders & Scaffold Parity:** In templates, boilerplates, or generators, strictly use canonical uppercase snake-case bracketed placeholders `[UPPER_SNAKE_CASE]`. Ensure zero orphan placeholders remain in active delivered code or documentation.
+
+---
+
+## 🐚 3. Shell Scripting Standards (Bash Best Practices)
 
 Every script must follow these safety and quality requirements:
 
@@ -91,7 +111,7 @@ Every script must follow these safety and quality requirements:
 
 ---
 
-## 📂 3. Directory Structure
+## 📂 4. Directory Structure
 
 ```plaintext
 shell-script-lab/
@@ -114,7 +134,7 @@ shell-script-lab/
 
 ---
 
-## 🧪 4. Testing & Verification Standards
+## 🧪 5. Testing & Verification Standards
 
 Before completing any task, an AI agent must verify:
 
@@ -151,13 +171,13 @@ Before completing any task, an AI agent must verify:
 
 ---
 
-## 💡 5. Canonical Script Template
+## 💡 6. Canonical Script Template
 
 When generating a new script, use [`scripts/template.sh`](./scripts/template.sh) as the baseline structure.
 
 ---
 
-## 📝 6. Commit Standards (Conventional Commits)
+## 📝 7. Commit Standards (Conventional Commits)
 
 All commit messages created or suggested by AI agents must strictly follow the **Conventional Commits** specification:
 
