@@ -169,6 +169,16 @@ Before completing any task, an AI agent must verify:
 
    Verify with `bash scripts/update-index.sh --check`.
 
+5. **Anti-Test Tampering:**
+   * NEVER weaken, comment out, or relax BATS test assertions or ShellCheck flags just to force a failing script to pass. Automated tests express the contract of the CLI utility. If a test fails, fix the shell script logic; never tamper with test assertions.
+
+6. **Anti-Doc Rot & Zero Zombie Code:**
+   * NEVER keep extensive duplicated script code blocks in documentation (`docs/`). Documentation must focus on architectural rationale, usage flags, and edge cases, linking directly to the real script files.
+   * NEVER leave dead code, commented-out bash functions, or orphan experimental snippets in scripts. Git history is the definitive archive; purge obsolete code surgically.
+
+7. **Continuous PR & Dependency Audit:**
+   * When operating in the repository, inspect open pull requests via `gh pr list`. Automated dependency updates (e.g., Dependabot, GitHub Actions) with passing CI and safe scope (minor/patch) should be merged via **Squash Merge** and synced locally (`git pull`).
+
 ---
 
 ## 💡 6. Canonical Script Template
@@ -213,3 +223,4 @@ All commit messages created or suggested by AI agents must strictly follow the *
 2. **Clean Revertability:** Commits must be self-contained so that `git revert <hash>` undoes the change cleanly without collateral effects.
 3. **Always Green State:** No intermediate commit should break the repository. ShellCheck, syntax check (`bash -n`), and BATS tests must pass on every commit.
 4. **Canonical English & Imperative Mood:** All commit messages MUST be written in **English** using imperative verbs (`add`, `fix`, `sync`, `enforce`, `bump`, `polish`, `remove`).
+5. **AI Traceability & Co-Authorship (Git Co-Authorship):** Every commit suggested or authored with the assistance of an AI agent MUST include the canonical Git trailer in the message footer: `Co-authored-by: Google Antigravity <antigravity[bot]@google.com>` (or the respective model/agent), ensuring transparency, code provenance, and native GitHub co-authorship attribution.
