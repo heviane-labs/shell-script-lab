@@ -224,3 +224,14 @@ All commit messages created or suggested by AI agents must strictly follow the *
 3. **Always Green State:** No intermediate commit should break the repository. ShellCheck, syntax check (`bash -n`), and BATS tests must pass on every commit.
 4. **Canonical English & Imperative Mood:** All commit messages MUST be written in **English** using imperative verbs (`add`, `fix`, `sync`, `enforce`, `bump`, `polish`, `remove`).
 5. **AI Traceability & Co-Authorship (Git Co-Authorship):** Every commit suggested or authored with the assistance of an AI agent MUST include the canonical Git trailer in the message footer: `Co-authored-by: Google Antigravity <antigravity[bot]@google.com>` (or the respective model/agent), ensuring transparency, code provenance, and native GitHub co-authorship attribution.
+
+---
+
+## ✅ 8. Post-Implementation Checklist (Definition of Done)
+
+Before marking any task, utility, or shell script complete, the agent MUST execute and demonstrate compliance with the 4-Phase Protocol:
+
+1. **Phase 1 (Quality Gates):** BATS automated test suite 100% green (`bats tests/`), zero warnings in ShellCheck (`shellcheck -x scripts/*.sh`), valid syntax check (`bash -n`), *Anti-Test Tampering*, and *Zero Secrets*.
+2. **Phase 2 (Living Documentation):** Update `README.md` and module docs, keep specs and examples in sync, eliminate dead code (*Zero Zombie Code*), and ensure clean relative links (*Anti-Doc Rot*).
+3. **Phase 3 (Cloud Governance & PR Audit):** Check remote Pull Requests (`gh pr list`), merge or close safe automated PRs, and align backlog status.
+4. **Phase 4 (Git Delivery & Traceability):** Pre-approval with developer (*Human-in-the-Loop*), atomic Conventional Commits in imperative English, and mandatory trailer `Co-authored-by: Google Antigravity <antigravity[bot]@google.com>`.
